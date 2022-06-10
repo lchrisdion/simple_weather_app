@@ -11,14 +11,16 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialBinding: HomeBinding(),
+      debugShowCheckedModeBanner: false,
+      color: Colors.white,
       initialRoute: Routes.HOME,
-      navigatorKey: Get.key,
       theme: appThemeData,
+      getPages: AppPages.routes,
+      navigatorKey: Get.key,
     );
   }
 }
