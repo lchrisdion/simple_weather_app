@@ -103,7 +103,6 @@ class HomeSearchDialog extends GetView<HomeController> {
                                 lon: result.geometry!.location!.lng!,
                                 locName: result.name,
                               );
-                            Get.back();
                           },
                           child: Container(
                             padding: const EdgeInsets.all(20),

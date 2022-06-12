@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:simple_weather_app/app/data/repositories/open_weather_repository.dart';
 import 'package:simple_weather_app/app/get_storage_services.dart';
 import '../../../data/models/weather_data_model.dart';
+import '../../../ui/widgets/home_alert_dialog.dart';
 import '../../../utils/helper.dart';
 
 class HomeController extends GetxController {
@@ -38,15 +39,14 @@ class HomeController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    print('inii ${dotenv.env['OPEN_WEATHER_API_KEY']}');
     isFetching.value = true;
-    if (await getLocationPermission()) {
-      await getLocation();
-      // await Future.delayed(Duration(
-      //   seconds: 1,
-      // ));
-      await getCurrentWeather();
-    }
+    // if (await getLocationPermission()) {
+    // await getLocation();
+    // await Future.delayed(Duration(
+    //   seconds: 1,
+    // ));
+    await getCurrentWeather();
+    // }
     isFetching.value = false;
     searchLocationWorker = searchLocationWorker;
   }
@@ -217,9 +217,11 @@ class HomeController extends GetxController {
           windSpeed: response.current?.windSpeed,
           weather: response.current?.weather?.first.main ?? "",
         );
+        Get.back();
         setLocalUserWeatherDataValue();
       } else {
         //ALERT LOCATION ALREADY EXISTS;
+        Get.dialog(HomeAlertDialog());
       }
     } catch (e) {
       print(e);
