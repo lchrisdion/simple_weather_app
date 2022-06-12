@@ -40,13 +40,13 @@ class HomeController extends GetxController {
   void onInit() async {
     super.onInit();
     isFetching.value = true;
-    // if (await getLocationPermission()) {
-    // await getLocation();
-    // await Future.delayed(Duration(
-    //   seconds: 1,
-    // ));
-    await getCurrentWeather();
-    // }
+    if (await getLocationPermission()) {
+      await getLocation();
+      // await Future.delayed(Duration(
+      //   seconds: 1,
+      // ));
+      await getCurrentWeather();
+    }
     isFetching.value = false;
     searchLocationWorker = searchLocationWorker;
   }
