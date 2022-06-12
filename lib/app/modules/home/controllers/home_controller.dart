@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -26,6 +27,13 @@ class HomeController extends GetxController {
       milliseconds: 500,
     ),
   );
+  late Timer autoRefreshAfterGrantedLocation = Timer(
+    Duration(seconds: 1),
+    () async {
+      if (!locationGranted) await refreshPage();
+      locationGranted = await currentLocation.serviceEnabled();
+    },
+  );
   final googlePlaceResult = googlePlace.TextSearchResponse().obs;
   final selectedWeatherData = WeatherData().obs;
   final userWeatherData = UserWeatherData().obs;
@@ -36,19 +44,24 @@ class HomeController extends GetxController {
   final isNoInternetConnection = false.obs;
   final isFetching = false.obs;
   final isRefreshing = false.obs;
+  bool locationGranted = false;
   @override
-  void onInit() async {
+  onInit() async {
     super.onInit();
     isFetching.value = true;
+    searchLocationWorker = searchLocationWorker;
+
     if (await getLocationPermission()) {
-      await getLocation();
-      // await Future.delayed(Duration(
-      //   seconds: 1,
-      // ));
-      await getCurrentWeather();
+      if (await currentLocation.serviceEnabled()) {
+        await getLocation();
+        await getCurrentWeather();
+      } else {
+        await currentLocation.requestService();
+        locationGranted = false;
+        autoRefreshAfterGrantedLocation = autoRefreshAfterGrantedLocation;
+      }
     }
     isFetching.value = false;
-    searchLocationWorker = searchLocationWorker;
   }
 
   @override
@@ -62,12 +75,10 @@ class HomeController extends GetxController {
   }
 
   refreshPage() async {
+    if (isRefreshing.value) return;
     isRefreshing.value = true;
     if (await getLocationPermission()) {
       await getLocation();
-      // await Future.delayed(Duration(
-      //   seconds: 1,
-      // ));
       await getCurrentWeather();
     }
     searchLocationWorker = searchLocationWorker;
